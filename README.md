@@ -26,7 +26,9 @@ cd argo-rollouts-istio-prometheus
 
 ### Create the Cluster
 
-Make a GKE cluster with the instructions below! Or you can create a Kubernetes cluster on your own, of any flavor, as long as it has an external load balancer that [supports an Istio Gateway resource](https://istio.io/latest/docs/tasks/traffic-management/ingress/ingress-control/#determining-the-ingress-ip-and-ports)!
+Make a GKE cluster with the instructions below.
+
+Or you can create a Kubernetes cluster on your own, of any flavor, as long as it has an external load balancer that [supports an Istio Gateway resource](https://istio.io/latest/docs/tasks/traffic-management/ingress/ingress-control/#determining-the-ingress-ip-and-ports).
 
 (As a side note, did you know that [there is a load balancer for KIND](https://github.com/kubernetes-sigs/cloud-provider-kind)?)
 
@@ -292,7 +294,7 @@ kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj
 
 That's it! We did the thing! But feel free to keep playing in this environment we made. Go ahead, tweak some yaml and see what happens! And play with other `rollouts-demo` application images. Available image colors are red, orange, yellow, green, blue, and purple. There are also high error rate images, prefixed with the word `bad` (e.g. `argoproj/rollouts-demo:bad-yellow`), and high latency images, prefixed with the word `slow` (e.g. `argoproj/rollouts-demo:slow-yellow`).
 
-As a reminder, you can imperatively change the rollout image with the `argo rollouts` `set image` command.
+As a reminder, you can imperatively change the rollout image with the `argo rollouts` `set image` command, like so:
 ```
 kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj/rollouts-demo:green"
 ```
