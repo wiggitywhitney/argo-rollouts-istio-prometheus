@@ -4,15 +4,14 @@ metadata:
   name: istio-success-rate
   namespace: rollouts-demo-istio
 spec:
-  # this analysis template requires a service name and namespace to be supplied to the query
-  args:
-  - name: service
+  args:   # the values of these variables are defined in the Rollout resource and supplied to the query
+  - name: service 
   - name: namespace
   metrics:
   - name: success-rate
-    initialDelay: 30s
-    interval: 10s
-    successCondition: len(result) == 0 || result[0] >= 0.99
+    initialDelay: 30s   # wait 30 seconds before querying metrics
+    interval: 10s   # query metrics every 10 seconds
+    successCondition: len(result) == 0 || result[0] >= 0.99  # Rollout requires 99% successful requests to continue
     provider:
       prometheus:
         address: http://prometheus.istio-system:9090

@@ -180,11 +180,15 @@ cat rollout.yaml
 
 Now let's view and discuss the Argo Rollouts resource called an `AnalysisTemplate`. It stores our success conditions and is reusable.
 
+Here you see those PromQL queries we discussed earlier!
+
 You can see more specific information in the yaml comments:
 
 ```
 cat analysis.yaml
 ```
+![image](images/analysis.png)
+
 By now our application should be fully deployed!
 
 ### There is so much to see!
