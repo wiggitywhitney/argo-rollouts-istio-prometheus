@@ -1,26 +1,39 @@
 # Demo an Automated Canary Deployment on Kubernetes with Argo Rollouts, Istio, and Prometheus
 
-### Prerequisites
+Building stuff is fun! Let's use Argo Rollouts, Istio, and Prometheus to automate a canary deployment on Kubernetes!
+
+The application we'll run is the [Argo Rollouts Demo Application](https://github.com/argoproj/rollouts-demo/tree/master) which does a great job of visualizing how traffic is slowly routed from from the older, stabe version of the application to the newer "canary" version.
+
+## Prerequisites
 * [Google Cloud Project with Kubernetes API enabled](https://console.cloud.google.com/marketplace/product/google/container.googleapis.com)
 * [Helm](https://helm.sh/docs/intro/install/)
 * [hey](https://github.com/rakyll/hey) (HTTP load generator)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
-* [yq](https://github.com/mikefarah/yq)
+* [yq](https://github.com/mikefarah/yq) (YAML processor)
 * [Argo Rollouts Kubectl plugin](https://argoproj.github.io/argo-rollouts/installation/#kubectl-plugin-installation)
 
+## Prepare the Environment
+### Create the Cluster
 
-### Create Cluster
+Make a GKE cluster with the instructions below! Or you can create a Kubernetes cluster on your own, of any flavor, as long as it has a load balancer!
+
+(As a side note, did you know that [there is a load balancer for KIND](https://github.com/kubernetes-sigs/cloud-provider-kind)?)
 
 ```
 export KUBECONFIG=$PWD/kubeconfig.yaml
-
+# You will need to rerun this command any time you open a new terminal window, to connect to your cluster
+```
+```
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-
+```
+```
 # Replace `[...]` with your Google Cloud Project ID
 export PROJECT_ID=[...]
-
+```
+```
 export CLUSTER_NAME=rollouts-$(date +%Y%m%d%H%M)
-
+```
+```
 gcloud container clusters create $CLUSTER_NAME --project $PROJECT_ID \
           --zone us-east1-b --machine-type e2-standard-4 \
           --enable-autoscaling --num-nodes 1 --min-nodes 1 \
@@ -49,26 +62,31 @@ helm upgrade --install istio-ingress gateway \
 
 ```
 kubectl -n istio-system get svc
-
+# Wait for the External IP field of the istio-ingress service to be populated with an IP address
+```
+```
 export ISTIO_IP=$(kubectl --namespace istio-system \
     get service istio-ingress \
     --output jsonpath="{.status.loadBalancer.ingress[0].ip}")
+```
+```
+echo $ISTIO_IP
 
 # This is the IP address by which you can access applications running in your cluster!
-
-echo $ISTIO_IP
 ```
 
 ### Install Prometheus and connect to the Prometheus dashboard
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.24/samples/addons/prometheus.yaml
-
-
-kubectl port-forward svc/prometheus -n istio-system 9090:9090 &
-# View Prometheus at http://localhost:9090/ and verify that it is receiving Istio metrics by typing `istio` into the expression field and seeing whether any available metrics populate into the drop-down menu.
-
 ```
+```
+kubectl port-forward svc/prometheus -n istio-system 9090:9090 &
+```
+View Prometheus at http://localhost:9090/ and verify that it is receiving Istio metrics by typing `istio` into the expression field and seeing whether any available metrics populate into the drop-down menu.
+
+### A note about queries
+
 Below are the PromQL queries we'll use later to help verify the success of our rollout. You don't need to do anything with them now.
 
 This query computes the total rate of successful requests (non-5xx responses) to the istio-rollout-canary service:
@@ -89,7 +107,7 @@ sum(
 )
 
 ```
-Later for our success condition we'll divide the rate of successful requests by the rate of all requests, which will give us our success rate. 
+Later for our success condition we'll divide the rate of successful requests by the rate of all requests, which will give us our success rate. If we have no failing requests, that will give us a success rate of `1`.
 
 
 ### Install Argo Rollouts
@@ -103,7 +121,7 @@ kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/rele
 ### Create the Networking Resources
 
 
-Store hostname in a variable
+Store the hostname in a variable.
 ```
 export HOST=wiggitywhitney.$ISTIO_IP.nip.io
 ```
@@ -112,7 +130,7 @@ Verify. This is the address where we'll be able to access our running applicatio
 echo $HOST
 ```
 
-Modify the VirtualService yaml file to use $HOST as the host
+Modify the `virtualservice.yaml` file to use $HOST as the host.
 
 ```
 yq --inplace ".spec.hosts[0] = \"$HOST\"" \
@@ -126,32 +144,48 @@ kubectl apply -f namespace.yaml -f gateway.yaml -f services.yaml -f virtualservi
 
 <!--- As a side note, I spent forever troubleshooting why Istio wouldn't work and it ended up being the `istio: ingressgateway` selector on the Gateway resource. I needed to change it to `istio: ingress` since I installed Istio using Helm. --->
 
-Make sure Istio is working correctly
+Make sure Istio is working correctly.
 ```
 curl -i $HOST
 ```
-This returns a 503 error but also lets you know that the request is hitting an istio-envoy server
+This returns a 503 error but also lets you know that the request is hitting an istio-envoy server.
 
+
+## Demo Time!
 ### Run the Argo Rollouts demo application
 
-Start running the load tester
+Start running the load tester.
 ```
 hey -z 60m "http://$HOST/" &
 ```
-Cat the AnalysisTemplate resource, understand it, apply it!
+Apply the AnalysisTemplate and Rollout resources. 
+
+```
+kubectl apply -f analysis.yaml -f rollout.yaml
+```
+
+Now let's think about what we just deployed!
+
+First let's view and discuss our [Rollout](https://argoproj.github.io/argo-rollouts/features/specification/) Argo Rollouts resource. A `Rollout` replaces the Kubenetes `Deployment` object. 
+
+The `spec` section is very similar to that of a Kubernetes `Deployment`, and the `Rollouts` resource also introduces a `strategy` section. 
+
+Learn more about what's happening in the `strategy` section by viewing the yaml comments:
+
+```
+cat rollout.yaml
+
+```
+
+Now let's view and discuss the Argo Rollouts resource called an `AnalysisTemplate`. It stores our success conditions and is reusable.
+
+You can see more specific information in the yaml comments:
 
 ```
 cat analysis.yaml
 
-kubectl apply -f analysis.yaml
 ```
-
-Cat the Rollout resource, understand it, apply it!
-```
-cat rollout.yaml
-
-kubectl apply -f rollout.yaml
-```
+By now our application should be fully deployed!
 
 ### There is so much to see!
 
@@ -229,5 +263,5 @@ To learn more and play on your own, check out these resources!
 
 [Argo Rollouts Getting Started Guide](https://argoproj.github.io/argo-rollouts/getting-started/) - Approachable!
 
-[Argo Rollouts Demo Application](https://github.com/argoproj/rollouts-demo/tree/master) (This repo is based on the [istio example](https://github.com/argoproj/rollouts-demo/tree/master/examples/istio)) - Not for the faint of heart! 
+[Argo Rollouts Demo Application](https://github.com/argoproj/rollouts-demo/tree/master) - The demo you just completed is based on the [istio example](https://github.com/argoproj/rollouts-demo/tree/master/examples/istio) from this!
 

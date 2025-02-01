@@ -3,7 +3,7 @@ kind: Rollout
 metadata:
   name: istio-rollout
   namespace: rollouts-demo-istio
-spec:
+spec:   # this section is like a Kubernetes Deploymnet
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -26,19 +26,19 @@ spec:
           requests:
             memory: 32Mi
             cpu: 5m
-  strategy:
-    canary:
-      canaryService: istio-rollout-canary
-      stableService: istio-rollout-stable
-      # analysis will be performed in background, while rollout is progressing through its steps
+  strategy:   # this section is unique to a Rollout resource
+    canary:    # deployment strategy. Argo Rollouts can also do blue-green deployments
+      canaryService: istio-rollout-canary   # reference to a Kubernetes Service
+      stableService: istio-rollout-stable   
+      # analysis will be performed in background, while rollout is progressing through its steps. Inline analysis is also available.
       analysis:
         startingStep: 1   # index of step list, of when to start this analysis
         templates:
-        - templateName: istio-success-rate
-        args:             # arguments allow AnalysisTemplates to be re-used
-        - name: service 
+        - templateName: istio-success-rate  # references an AnalysisTemplate Argo Rollouts resource
+        args:   # arguments allow AnalysisTemplates to be re-used
+        - name: service   #  the variable defined here is used in the AnalysisTemplate, in the queries
           value: istio-rollout-canary
-        - name: namespace
+        - name: namespace   # this variable is also used in the AnalysisTemplate, in the queries
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
@@ -48,11 +48,11 @@ spec:
             name: istio-rollout-vsvc
             routes:
             - primary
-      steps:
-      - setWeight: 10
-      - pause: {}         # pause indefinitely
-      - setWeight: 20
-      - pause: {duration: 20s}
+      steps:   # Steps define sequence of steps to take during an update of the
+      - setWeight: 10   # Sets the percentage of traffic to canary ReplicaSet to 10%
+      - pause: {}   # pause indefinitely until manually resumed
+      - setWeight: 20   
+      - pause: {duration: 20s}   # Pauses the rollout for 20 seconds. Supported units: s, m, h
       - setWeight: 30
       - pause: {duration: 20s}
       - setWeight: 40
