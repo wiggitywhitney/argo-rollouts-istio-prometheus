@@ -2,7 +2,7 @@
 
 Building stuff is fun! Let's use Argo Rollouts, Istio, and Prometheus to automate a canary deployment on Kubernetes!
 
-The application we'll run is the [Argo Rollouts Demo Application](https://github.com/argoproj/rollouts-demo/tree/master) which does a great job of visualizing how traffic is slowly routed from from the older, stabe version of the application to the newer "canary" version.
+The application we'll run is the [Argo Rollouts Demo Application](https://github.com/argoproj/rollouts-demo/tree/master) which does a great job of visualizing how traffic is slowly routed from from the older, stable version of the application to the newer "canary" version.
 
 ## Prerequisites
 * [Google Cloud Project with Kubernetes API enabled](https://console.cloud.google.com/marketplace/product/google/container.googleapis.com)
