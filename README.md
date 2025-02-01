@@ -5,12 +5,15 @@ Building stuff is fun! Let's use Argo Rollouts, Istio, and Prometheus to automat
 The application we'll run is the [Argo Rollouts Demo Application](https://github.com/argoproj/rollouts-demo/tree/master) which does a great job of visualizing how traffic is slowly routed from from the older, stable version of the application to the newer "canary" version.
 
 ## Prerequisites
-* [Google Cloud Project with Kubernetes API enabled](https://console.cloud.google.com/marketplace/product/google/container.googleapis.com)
 * [Helm](https://helm.sh/docs/intro/install/)
 * [hey](https://github.com/rakyll/hey) (HTTP load generator)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
 * [yq](https://github.com/mikefarah/yq) (YAML processor)
 * [Argo Rollouts Kubectl plugin](https://argoproj.github.io/argo-rollouts/installation/#kubectl-plugin-installation)
+
+optional
+* [Google Cloud Project with Kubernetes API enabled](https://console.cloud.google.com/marketplace/product/google/container.googleapis.com)
+* [gcloud CLI](https://cloud.google.com/sdk/docs/install), authorized to access Google Cloud
 
 
 ## Prepare the Environment
@@ -23,7 +26,7 @@ cd argo-rollouts-istio-prometheus
 
 ### Create the Cluster
 
-Make a GKE cluster with the instructions below! Or you can create a Kubernetes cluster on your own, of any flavor, as long as it has a load balancer!
+Make a GKE cluster with the instructions below! Or you can create a Kubernetes cluster on your own, of any flavor, as long as it has an external load balancer that [supports an Istio Gateway resource](https://istio.io/latest/docs/tasks/traffic-management/ingress/ingress-control/#determining-the-ingress-ip-and-ports)!
 
 (As a side note, did you know that [there is a load balancer for KIND](https://github.com/kubernetes-sigs/cloud-provider-kind)?)
 
