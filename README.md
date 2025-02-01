@@ -12,7 +12,15 @@ The application we'll run is the [Argo Rollouts Demo Application](https://github
 * [yq](https://github.com/mikefarah/yq) (YAML processor)
 * [Argo Rollouts Kubectl plugin](https://argoproj.github.io/argo-rollouts/installation/#kubectl-plugin-installation)
 
+
 ## Prepare the Environment
+### Clone the repository
+```
+git clone https://github.com/wiggitywhitney/argo-rollouts-istio-prometheus.git
+
+cd argo-rollouts-istio-prometheus
+```
+
 ### Create the Cluster
 
 Make a GKE cluster with the instructions below! Or you can create a Kubernetes cluster on your own, of any flavor, as long as it has a load balancer!
