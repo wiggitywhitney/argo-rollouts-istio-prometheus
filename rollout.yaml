@@ -30,7 +30,8 @@ spec:   # this section is like a Kubernetes Deploymnet
     canary:    # deployment strategy. Argo Rollouts can also do blue-green deployments
       canaryService: istio-rollout-canary   # reference to a Kubernetes Service
       stableService: istio-rollout-stable   
-      # analysis will be performed in background, while rollout is progressing through its steps. Inline analysis is also available.
+      # analysis will be performed in background, while rollout is progressing through its steps
+      # inline analysis is also available
       analysis:
         startingStep: 1   # index of step list, of when to start this analysis
         templates:
