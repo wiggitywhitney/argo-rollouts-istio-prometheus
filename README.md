@@ -253,7 +253,7 @@ kubectl -n rollouts-demo-istio describe analysisrun [...]
 
 ### What if the new application sucks?
 
-Simulate a failing application.
+Let's simulate a failing application.
 ```
 kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj/rollouts-demo:bad-purple"
 ```
