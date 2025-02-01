@@ -244,9 +244,9 @@ kubectl argo rollouts -n rollouts-demo-istio promote istio-rollout
 # or press the 'promote' button in the UI!
 ```
 
-And now we're off! Wheeeeee! Watch all of the things: your live application, the Argo Rollouts dashboard, and the terminal tab containing the output `watch` command.
+And now we're off! Wheeeeee! Watch all of the things: your live application, the Argo Rollouts dashboard, and the terminal tab containing the output of the `watch` command.
 
-As long as the traffic is flowing successfully, the new app will get promoted and eventually receive 100% of traffic, and the old app will get scaled down.
+As long as the traffic is flowing successfully, the new app will get promoted and eventually receive 100% of traffic, and at that point the old app will scale down.
 
 See the `AnalysisRun` progress in the UI by clicking the `Analysis *` button associated with the current revision, or by running the following command:
 ```
@@ -287,7 +287,14 @@ kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj
 
 ### We did it! Huzzah!!!
 
-To learn more and play on your own, check out these resources!
+That's it! We did the thing! But feel free to keep playing in this environment we made. Go ahead, tweak some yaml and see what happens! And play with other `rollouts-demo` application images. Available image colors are red, orange, yellow, green, blue, and purple. There are also high error rate images, prefixed with the word `bad` (e.g. `argoproj/rollouts-demo:bad-yellow`), and high latency images, prefixed with the word `slow` (e.g. `argoproj/rollouts-demo:slow-yellow`).
+
+As a reminder, you can imperatively change the rollout image with the `argo rollouts` `set image` command.
+```
+kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj/rollouts-demo:green"
+```
+
+### Further learning and playing
 
 [Argo Rollouts Getting Started Guide](https://argoproj.github.io/argo-rollouts/getting-started/) - Approachable!
 
