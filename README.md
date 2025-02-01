@@ -261,8 +261,11 @@ kubectl -n rollouts-demo-istio get analysisrun
 
 kubectl -n rollouts-demo-istio describe analysisrun [...]
 ```
-
 ... and they were all yellow!  ♫ 
+
+### Wait. What is an `AnalysisRun`?
+
+An `AnalysisRun` is an instantiation of an `AnalysisTemplate`. As we went over, an `AnalysisTemplate` contains instructions about what metrics to query. The actual result, attached to a specific `Rollout`, is the `AnalysisRun` custom resource. The `AnalysisRun` resource is scoped on a specific rollout.
 
 ### What if the new application sucks?
 
