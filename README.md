@@ -174,8 +174,9 @@ Learn more about what's happening in the `strategy` section by viewing the yaml 
 
 ```
 cat rollout.yaml
-
 ```
+
+![image](images/rollout.png)
 
 Now let's view and discuss the Argo Rollouts resource called an `AnalysisTemplate`. It stores our success conditions and is reusable.
 
@@ -183,7 +184,6 @@ You can see more specific information in the yaml comments:
 
 ```
 cat analysis.yaml
-
 ```
 By now our application should be fully deployed!
 
