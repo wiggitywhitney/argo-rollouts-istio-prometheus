@@ -178,7 +178,7 @@ cat rollout.yaml
 
 ![image](images/rollout.png)
 
-Now let's view and discuss the Argo Rollouts resource called an `AnalysisTemplate`. It stores our success conditions and is reusable.
+Now let's view and discuss the Argo Rollouts resource called an [AnalysisTemplate](https://argoproj.github.io/argo-rollouts/architecture/#analysistemplate-and-analysisrun). It stores our success conditions and is reusable.
 
 Here you see those PromQL queries we discussed earlier!
 
@@ -208,9 +208,9 @@ kubectl argo rollouts dashboard -n rollouts-demo-istio &
 Watch the rollout status!
 ```
 # open a new tab in your terminal
-kubectl argo rollouts get rollout istio-rollout -n rollouts-demo-istio --watch
-
 # you might need to run `export KUBECONFIG=$PWD/kubeconfig.yaml` again to connect to your cluster
+
+kubectl argo rollouts get rollout istio-rollout -n rollouts-demo-istio --watch
 ```
 
 ### Update your rollout! Watch all the things!
@@ -220,17 +220,27 @@ kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj
 
 ### Manually promote the rollout
 
-Based on our Rollout definition, 10% of traffic is going to the new release the rollout pauses and waits for manual promotion. 
+Based on our `Rollout` definition, 10% of traffic is going to the new release. The rollout then pauses and waits for manual promotion. 
 
+View 10% yellow squares in the running application!
+```
+echo "http://$HOST/"
+
+# open the url from the output!
+```
+
+Use either the command line or the web UI to promote the rollout.
 ```
 kubectl argo rollouts -n rollouts-demo-istio promote istio-rollout
 
 # or press the 'promote' button in the UI!
 ```
 
-And now we're off! Wheeeeee! As long as the traffic is flowing successfully, the new app will get promoted eventually receive 100% of traffic, and the old app will get scaled down.
+And now we're off! Wheeeeee! Watch all of the things: your live application, the Argo Rollouts dashboard, and the terminal tab containing the output `watch` command.
 
-See the AnalysisRun progress in the UI, or by running:
+As long as the traffic is flowing successfully, the new app will get promoted and eventually receive 100% of traffic, and the old app will get scaled down.
+
+See the `AnalysisRun` progress in the UI by clicking the `Analysis *` button associated with the current revision, or by running the following command:
 ```
 kubectl -n rollouts-demo-istio get analysisrun
 
@@ -239,14 +249,20 @@ kubectl -n rollouts-demo-istio get analysisrun
 kubectl -n rollouts-demo-istio describe analysisrun [...]
 ```
 
+... and they were all yellow!  ♫ 
+
 ### What if the new application sucks?
 
-Simulate a failing application:
+Simulate a failing application.
 ```
 kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj/rollouts-demo:bad-purple"
 ```
 
-The UI seems to have a bug where I can't click into the AnalysisRun and see what failed exactly. But I can see it with kubectl by getting and describing the related analysisrun.
+In a minute or two, the rollout will fail and the application will be rolled out to the previous stable version.
+
+If it takes a long time to fail, try killing the load generator `hey`.
+
+The Argo Rollouts dashboard has a bug where we can't click into the AnalysisRun and see what failed exactly. But we can see it with `kubectl` by getting and describing the related `AnalysisRun`.
 ```
 kubectl -n rollouts-demo-istio get analysisrun
 
@@ -255,7 +271,7 @@ kubectl -n rollouts-demo-istio get analysisrun
 kubectl -n rollouts-demo-istio describe analysisrun [...]
 ```
 
-After a failure, our Rollout is `Degraded`. To be able to do anything else, we need to make our Rollout `Healthy` again by changing the desired state back to the previous, stable version.
+After a failure, our rollout is `Degraded`. To be able to do anything else, we need to make our rollout `Healthy` again by changing the desired state back to the previous, stable version. This ensures that our desired state is aligned with our actual state.
 
 ```
 kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj/rollouts-demo:yellow"
