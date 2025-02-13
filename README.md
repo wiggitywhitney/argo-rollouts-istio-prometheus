@@ -5,6 +5,8 @@
 > The application we'll run is the [Argo Rollouts Demo Application](https://github.com/argoproj/rollouts-demo/tree/master) which does a great job of visualizing how traffic is slowly routed from from the older, stable version of the application to the newer "canary" version.
 
 ## Prerequisites
+
+required
 * [Helm](https://helm.sh/docs/intro/install/)
 * [hey](https://github.com/rakyll/hey) (HTTP load generator)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
@@ -34,6 +36,7 @@ cd argo-rollouts-istio-prometheus
 
 ```
 export KUBECONFIG=$PWD/kubeconfig.yaml
+
 # You will need to rerun this command any time you open a new terminal window, to connect to your cluster
 ```
 ```
@@ -71,7 +74,7 @@ helm upgrade --install istio-ingress gateway \
     --namespace istio-system
 ```
 
-### Verify & Get external IP
+### Verify Istio Installation & Get external IP
 
 ```
 kubectl -n istio-system get svc

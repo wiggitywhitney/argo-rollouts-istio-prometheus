@@ -50,6 +50,7 @@ spec:   # this section is like a Kubernetes Deploymnet
             routes:
             - primary
       steps:   # Steps define sequence of steps to take during an update of the
+               # canary. Skipped upon initial deploy of a rollout.
       - setWeight: 10   # Sets the percentage of traffic to canary ReplicaSet to 10%
       - pause: {}   # pause indefinitely until manually resumed
       - setWeight: 20   
