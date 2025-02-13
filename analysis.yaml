@@ -4,13 +4,13 @@ metadata:
   name: istio-success-rate
   namespace: rollouts-demo-istio
 spec:
-  args:   # the values of these variables are defined in the Rollout resource and supplied to the query
+  args:   # The values of these variables are defined in the Rollout resource and supplied to the query below
   - name: service 
   - name: namespace
   metrics:
   - name: success-rate
-    initialDelay: 30s   # wait 30 seconds before querying metrics
-    interval: 10s   # query metrics every 10 seconds
+    initialDelay: 30s   # Wait 30 seconds before querying metrics
+    interval: 10s   # Query metrics every 10 seconds
     successCondition: len(result) == 0 || result[0] >= 0.99  # Rollout requires 99% successful requests to continue
     provider:
       prometheus:

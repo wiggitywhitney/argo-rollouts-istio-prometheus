@@ -230,7 +230,12 @@ kubectl argo rollouts get rollout istio-rollout -n rollouts-demo-istio --watch
 ```
 
 ### Update your rollout! Watch all the things!
+
+This command updates our application color to yellow. Exciting.
+
 ```
+# go back to your original terminal tab
+
 kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj/rollouts-demo:yellow"
 ```
 
@@ -268,11 +273,12 @@ kubectl -n rollouts-demo-istio describe analysisrun [...]
 
 ### Wait. What is an `AnalysisRun`?
 
-> An `AnalysisRun` is an instantiation of an `AnalysisTemplate`. As we went over, an `AnalysisTemplate` contains instructions about what metrics to query. The actual result, attached to a specific `Rollout`, is the `AnalysisRun` custom resource. The `AnalysisRun` resource is scoped on a specific rollout.
+> An `AnalysisRun` is an instantiation of an `AnalysisTemplate`. As we went over, an `AnalysisTemplate` contains instructions about what metrics to query. The actual result, attached to a specific `Rollout`, is the `AnalysisRun` custom resource. The `AnalysisRun` resource is scoped to a specific rollout.
 
 ### What if the new application sucks?
 
-> Let's simulate a failing application.
+> Let's simulate a failing application. This command updates our application to run the `bad-purple` image.
+
 ```
 kubectl argo rollouts -n rollouts-demo-istio set image istio-rollout "*=argoproj/rollouts-demo:bad-purple"
 ```
